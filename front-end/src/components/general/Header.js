@@ -66,7 +66,7 @@ const Logo = styled.img`
   min-width: 70px;
 `;
 const Nav = styled(AppBar)`
-  background-color: ${props => props.theme.color.bg};
+  background-color: ${props => props.theme.color.tertiary};
 `;
 const UserAvatar = styled(Avatar)`
   width: 35px;

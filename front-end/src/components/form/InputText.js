@@ -5,7 +5,7 @@ import { TextField } from '@material-ui/core';
 const Input = styled(TextField)`
   display: flex;
   flex: 1;
-  background-color: ${props => props.theme.color.inputBg};
+  background-color: ${props => props.theme.color.secondary};
   border-radius: 5px;
   margin: 30px 0 10px;
 `;

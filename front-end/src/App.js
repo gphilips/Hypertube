@@ -14,7 +14,7 @@ import { PrivateRoute } from "./utils/secureRoute";
 
 import Header from "./components/general/Header";
 import HomePage from "./containers/HomePage";
-// import SignUp from "./containers/SignUp";
+import SignUp from "./containers/SignUp";
 import Login from "./containers/Login";
 
 const styleNode = document.createComment("insertion-point-jss");
@@ -37,7 +37,7 @@ class App extends Component {
                 <NotificationContainer />
                 <Header />
                 <Switch>
-                  {/* <Route exact path="/sign-up" component={SignUp} /> */}
+                  <Route exact path="/sign-up" component={SignUp} />
                   <Route exact path="/sign-in" component={Login} />
                   <PrivateRoute path="/" component={HomePage} />
                   <Redirect to="/" />

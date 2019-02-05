@@ -29,10 +29,10 @@ const Title = styled.h1`
 `;
 
 const BtnForm = styled(Button)`
-  background-color: ${props => props.theme.color.btnForm};
+  background-color: ${props => props.theme.color.primary};
   margin: 30px 0;
   &&:hover {
-    background-color: ${props => props.theme.color.btnForm};
+    background-color: ${props => props.theme.color.primary};
   }
 `;
 
