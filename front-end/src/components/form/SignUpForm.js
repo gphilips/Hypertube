@@ -1,158 +1,176 @@
-import React from 'react';
-import styled from "styled-components";
-import { Field, reduxForm } from "redux-form";
+import React from "react";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { Field, reduxForm, getFormValues, isInvalid } from "redux-form";
 import {
-  Card,
-  CardContent,
-  Button,
-  IconButton,
-} from '@material-ui/core';
+  Content,
+  Title,
+  Form,
+  BtnForm,
+  ArrowIcon,
+  ChangeStepBtn
+} from "../../style/signUpForm";
 import {
   ArrowForwardIosRounded as ArrowRightIcon,
-  ArrowBackIosRounded as ArrowLeftIcon,
-} from '@material-ui/icons';
-
+  ArrowBackIosRounded as ArrowLeftIcon
+} from "@material-ui/icons";
+import allTheActions from "../../actions";
 import InputText from "../form/InputText";
-import InputRadio from "../form/InputRadio";
-
-const Wrapper = styled(Card)`
-  width: 40vw;
-  height: 10vh;
-  min-width: 233px;
-  min-height: 460px;
-  margin: 0 auto;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-`;
-const Content = styled(CardContent)`
-  display: flex;
-  flex: 1;
-  margin: 0 40px;
-  flex-direction: column;
-`;
-const Title = styled.h1`
-  font-size: ${props => props.theme.fontSize.h1};
-  color: ${props => props.theme.color.text};
-  display: flex;
-  justify-content: flex-start;
-`;
-const BtnForm = styled(Button)`
-  background-color: ${props => props.theme.color.primary};
-  margin: 30px 0;
-  &&:hover {
-    background-color: ${props => props.theme.color.primary};
-  }
-`;
-const ArrowIcon = styled(IconButton)`
-  color: ${props => props.theme.color.primary};
-  background-color: ${props => props.theme.color.secondary};
-  &&: hover {
-    background-color: ${props => props.theme.color.secondary};
-  }
-`;
-const ChangeStepBtn = styled.div`
-  display: flex;
-  flex: 1;
-  justify-content: space-around;
-  margin-top: 30px;
-`;
+import InputAvatar from "../form/InputAvatar";
 
 const validateSignUpForm = values => {
-  const { username, email, password } = values;
+  const {
+    username,
+    email,
+    password,
+    passwordCfm,
+    avatar,
+    firstname,
+    lastname
+  } = values;
   const errors = {};
 
-  if (username && !/^[A-Z0-9]+$/i.test(username))
-    errors.username = 'Invalid username)';
-  if (username && username.length < 8)
-    errors.username = 'Username is too short (8 characters minimum)';
-  if (email && !/^[A-Z0-9._]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email))
-    errors.email = 'Invalid email';
+  if (
+    username &&
+    !/^(?!.*--.*)(?!.*__.*)(?!.*\.\..*)[a-zA-Z0-9._-]+$/i.test(username.trim())
+  )
+    errors.username = "It must contain alphanumeric characters";
+  if (username && username.length < 4)
+    errors.username = "Username is too short (4 characters minimum)";
+  if (username && username.length > 30)
+    errors.username = "Username is too long (30 characters maximum)";
+  if (email && !/^[A-Z0-9._]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email.trim()))
+    errors.email = "Please enter a valid email";
   if (password && password.length < 8)
-    errors.password = 'Password is too short (8 characters minimum)';
+    errors.password = "Password is too short (8 characters minimum)";
+  if (password && password.length > 30)
+    errors.password = "Password is too long (30 characters maximum)";
+  if (password && !/(?=.*[0-9])/.test(password))
+    errors.password = "It must contain a numeric character";
+  if (password && !/(?=.*[!@#$%^&*_-])/.test(password))
+    errors.password = "It must contain a special character";
+  if (password && !/(?=.*[A-Z])/.test(password))
+    errors.password = "It must contain an uppercase character";
+  if (password && !/(?=.*[a-z])/.test(password))
+    errors.password = "It must contain a lowercase character";
+  if (passwordCfm && passwordCfm !== password)
+    errors.passwordCfm = "Passwords are not the same";
+  if (avatar && avatar.length < 1) errors.avatar = "Avatar is missing";
+  if (firstname && firstname.length < 4)
+    errors.firstname = "First name is too short (4 characters minimum)";
+  if (firstname && firstname.length > 30)
+    errors.firstname = "First name is too long (30 characters maximum)";
+  if (firstname && !/^(?!.*--.*)[A-Z-]+$/i.test(firstname.trim()))
+    errors.firstname = "It must contain alpha characters";
+  if (lastname && lastname.length < 4)
+    errors.lastname = "Last name is too short (4 characters minimum)";
+  if (lastname && lastname.length > 30)
+    errors.lastname = "Last name is too long (30 characters maximum)";
+  if (lastname && !/^(?!.*--.*)[A-Z-]+$/i.test(lastname.trim()))
+    errors.lastname = "It must contain alpha characters";
   return errors;
-}
+};
 
 class SignUpForm extends React.Component {
+  _isMounted = false;
   state = {
     step: 0,
-    username: '',
-    email: '',
-    password: '',
-    firstname: '',
-    lasttname: '',
-    gender: '',
+    avatarPic: ""
+  };
+
+  componentDidMount() {
+    this._isMounted = true;
   }
 
-  handleChange = ({ target: { name, value } }) => {
-    return this.setState({ [name]: value });
-  }
-
-  handleSubmit = (e) => {
-    const { logInUser } = this.props;
-    const { email, password } = this.state;
-    
+  handleSubmit = e => {
+    const {
+      email,
+      password,
+      passwordCfm,
+      username,
+      firstname,
+      lastname
+    } = this.props.formValues;
+    const { registerUser } = this.props.actions.users;
+    const { avatarPic } = this.state;
     e.preventDefault();
-    logInUser({
-      email: email.trim(),
-      password: password.trim(),
+    registerUser({
+      email,
+      password,
+      passwordCfm,
+      username,
+      firstname,
+      lastname,
+      avatar: avatarPic
     });
-  }
+  };
+
+  handleChange = async e => {
+    const { uploadAvatar } = this.props.actions.users;
+    if (e.target.files[0]) {
+      let file = e.target.files[0];
+      await uploadAvatar(file, null);
+      if (this._isMounted) {
+        this.setState({ avatarPic: this.props.avatar });
+      }
+    }
+  };
 
   changeStepBtn = () => {
     const { step } = this.state;
-    const { submitting } = this.props;
+    const { pristine, invalid, submitting } = this.props;
+    let elems = [];
 
     if (step === 2) {
-      return (
+      elems.push(
         <BtnForm
           type="submit"
           variant="contained"
           color="secondary"
           size="large"
-          disabled={submitting}
+          disabled={pristine || invalid || submitting}
           fullWidth
+          key="submitBtn"
         >
           Sign Up
         </BtnForm>
       );
     }
-    return (
-      <ChangeStepBtn>
+    elems.push(
+      <ChangeStepBtn key="changeBtn">
         {step > 0 && (
           <ArrowIcon
             aria-label="Previous step"
-            onClick={() => this.setState({ step : step - 1 })}
+            onClick={() => {
+              if (this._isMounted) {
+                this.setState({ step: step - 1 });
+              }
+            }}
           >
-          <ArrowLeftIcon />
-        </ArrowIcon>
+            <ArrowLeftIcon />
+          </ArrowIcon>
         )}
         {step < 2 && (
           <ArrowIcon
             aria-label="Next step"
-            onClick={() => this.setState({ step : step + 1 })}
+            onClick={() => {
+              if (this._isMounted) {
+                this.setState({ step: step + 1 });
+              }
+            }}
           >
-          <ArrowRightIcon />
-        </ArrowIcon>
+            <ArrowRightIcon />
+          </ArrowIcon>
         )}
       </ChangeStepBtn>
-    )
-  }
+    );
+    return elems;
+  };
 
   firstStep = () => (
     <div>
-      <Field
-        name="username"
-        label="Username"
-        component={InputText}
-        onChange={this.handleChange}
-      />
-        <Field
-          name="email"
-          type="email"
-          label="Email"
-          component={InputText}
-          onChange={this.handleChange}
-        />
+      <Field name="username" label="Username" component={InputText} />
+      <Field name="email" type="email" label="Email" component={InputText} />
     </div>
   );
 
@@ -163,66 +181,71 @@ class SignUpForm extends React.Component {
         type="password"
         label="Password"
         component={InputText}
-        onChange={this.handleChange}
       />
       <Field
         name="passwordCfm"
         type="password"
         label="Confirm password"
         component={InputText}
-        onChange={this.handleChange}
       />
     </div>
   );
 
   thirdStep = () => {
-    const { gender } = this.state;
-    const inputs = ['male', 'female', 'both'];
     return (
       <div>
         <Field
-          name="firstname"
-          label="First name"
-          component={InputText}
+          name="avatar"
+          label="upload-avatar"
+          type="file"
+          component={InputAvatar}
+          avatarpic={this.state.avatarPic}
           onChange={this.handleChange}
         />
-        <Field
-          name="lastname"
-          label="Last name"
-          component={InputText}
-          onChange={this.handleChange}
-        />
-        <Field
-          name="gender"
-          label="Gender"
-          inputs={inputs}
-          component={InputRadio}
-          value={gender}
-          onChange={this.handleChange}
-        />
+        <Field name="firstname" label="First name" component={InputText} />
+        <Field name="lastname" label="Last name" component={InputText} />
       </div>
     );
   };
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   render() {
     const { step } = this.state;
     return (
-      <Wrapper>
-        <Content>
-          <Title>Sign Up</Title>
-            <form onSubmit={this.handleSubmit}>
-              {step === 0 && this.firstStep()}
-              {step === 1 && this.secondStep()}
-              {step === 2 && this.thirdStep()}
-              {this.changeStepBtn()}
-            </form>
-        </Content>
-      </Wrapper>
+      <Content>
+        <Title>Sign Up</Title>
+        <Form onSubmit={this.handleSubmit} encType="multipart/form-data">
+          {step === 0 && this.firstStep()}
+          {step === 1 && this.secondStep()}
+          {step === 2 && this.thirdStep()}
+          {this.changeStepBtn()}
+        </Form>
+      </Content>
     );
   }
 }
 
-export default reduxForm({
-  form: 'signUpForm',
-  validate: validateSignUpForm,
+SignUpForm = reduxForm({
+  form: "signUpForm",
+  validate: validateSignUpForm
 })(SignUpForm);
+
+const mapStateToProps = state => ({
+  formValues: getFormValues("signUpForm")(state),
+  avatar: state.users.avatar,
+  invalid: isInvalid("signUpForm")(state)
+});
+
+const mapDispatchToProps = dispatch => ({
+  actions: {
+    users: bindActionCreators(allTheActions.users, dispatch)
+  }
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SignUpForm);

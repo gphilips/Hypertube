@@ -5,7 +5,7 @@ import jwtDecode from "jwt-decode";
 const isAuthenticated = () => {
   const token = localStorage.Authorization;
   if (token) {
-    const decoded = jwtDecode(token);
+    const decoded = jwtDecode(token.split(' ')[1]);
     return (!!decoded.username);
   }
   return false;

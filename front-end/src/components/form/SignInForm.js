@@ -1,113 +1,120 @@
-import React from 'react';
-import styled from "styled-components";
-import { Card, CardContent, Button } from '@material-ui/core';
-import { Field, reduxForm } from "redux-form";
-
+import React from "react";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { Field, reduxForm, getFormValues, isInvalid } from "redux-form";
+import {
+	Content,
+	SignInFormStyled,
+	Title,
+	BtnForm,
+	LinkReset,
+	SignUpDiv,
+	LinkSignUp,
+	SocialLogins,
+	Label,
+} from "../../style/signInForm";
+import allTheActions from "../../actions";
 import InputText from "../form/InputText";
-
-const Wrapper = styled(Card)`
-  width: 40vw;
-  height: 10vh;
-  min-width: 233px;
-  min-height: 460px;
-  margin: 0 auto;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-`;
-const Content = styled(CardContent)`
-  display: flex;
-  flex: 1;
-  margin: 0 40px;
-  flex-direction: column;
-`;
-
-const Title = styled.h1`
-  font-size: ${props => props.theme.fontSize.h1};
-  color: ${props => props.theme.color.text};
-  display: flex;
-  justify-content: flex-start;
-`;
-
-const BtnForm = styled(Button)`
-  background-color: ${props => props.theme.color.primary};
-  margin: 30px 0;
-  &&:hover {
-    background-color: ${props => props.theme.color.primary};
-  }
-`;
+import OAuthButton from "../form/OAuthButton";
 
 const validateSignInForm = values => {
-  const { email, password } = values;
-  const errors = {};
+	const { username, password } = values;
+	const errors = {};
 
-  if (email && !/^[A-Z0-9._]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email))
-    errors.email = 'Invalid email';
-  if (password && password.length < 8)
-    errors.password = 'Password is too short (8 characters minimum)';
-  return errors;
-}
+	if (username && username.length < 4)
+		errors.username = "Username is too short (4 characters minimum)";
+	if (username && username.length > 30)
+		errors.username = "Username is too long (30 characters maximum)";
+	if (
+		username &&
+		!/^(?!.*--.*)(?!.*__.*)(?!.*\.\..*)[a-zA-Z0-9._-]+$/i.test(username.trim())
+	)
+		errors.username = "Invalid username";
+	if (password && password.length < 8)
+		errors.password = "Password is too short (8 characters minimum)";
+	if (password && password.length > 30)
+		errors.password = "Password is too long (30 characters maximum)";
+	return errors;
+};
 
 class SignInForm extends React.Component {
-  state = {
-    email: '',
-    password: '',
-  }
+	handleSubmit = e => {
+		const { username, password } = this.props.formValues;
+		const { logInUser } = this.props.actions.users;
+		e.preventDefault();
+		logInUser({ username, password });
+	};
 
-  handleChange = ({ target: { name, value } }) => {
-    return this.setState({ [name]: value });
-  }
+	renderFields = () => {
+		const { submitting, pristine, invalid } = this.props;
+		return (
+			<SignInFormStyled onSubmit={this.handleSubmit}>
+				<Field name="username" label="Username" component={InputText} />
+				<Field
+					name="password"
+					type="password"
+					label="Password"
+					component={InputText}
+				/>
+				<BtnForm
+					type="submit"
+					variant="contained"
+					color="secondary"
+					size="large"
+					disabled={pristine || invalid || submitting}
+					fullWidth
+				>
+					Sign in
+				</BtnForm>
+			</SignInFormStyled>
+		);
+	};
 
-  handleSubmit = (e) => {
-    const { logInUser } = this.props;
-    const { email, password } = this.state;
-    
-    e.preventDefault();
-    logInUser({
-      email: email.trim(),
-      password: password.trim(),
-    });
-  }
+	renderSocialLogins = () => {
+		const { logInWithOauth } = this.props.actions.users;
+		return (
+			<SocialLogins>
+				<OAuthButton provider="42" logInWithOauth={logInWithOauth} />
+				<OAuthButton provider="google" logInWithOauth={logInWithOauth} />
+				<OAuthButton provider="facebook" logInWithOauth={logInWithOauth} />
+			</SocialLogins>
+		);
+	};
 
-  render() {
-    const { submitting } = this.props;
-
-    return (
-      <Wrapper>
-        <Content>
-          <Title>Sign In</Title>
-            <form onSubmit={this.handleSubmit}>
-              <Field
-                name="email"
-                type="email"
-                label="Email"
-                component={InputText}
-                onChange={this.handleChange}
-              />
-              <Field
-                name="password"
-                type="password"
-                label="Password"
-                component={InputText}
-                onChange={this.handleChange}
-              />
-              <BtnForm
-                type="submit"
-                variant="contained"
-                color="secondary"
-                size="large"
-                disabled={submitting}
-                fullWidth
-              >
-                Sign in
-              </BtnForm>
-            </form>
-        </Content>
-      </Wrapper>
-    );
-  }
+	render() {
+		return (
+			<Content>
+				<Title>Sign In</Title>
+				{this.renderFields()}
+				<LinkReset to="/forgot">Need help?</LinkReset>
+				<Label>Sign in with:</Label>
+				{this.renderSocialLogins()}
+				<SignUpDiv>
+					New to Hypertube?
+					<LinkSignUp to="/sign-up">Sign up now</LinkSignUp>.
+				</SignUpDiv>
+			</Content>
+		);
+	}
 }
 
-export default reduxForm({
-  form: 'signInForm',
-  validate: validateSignInForm,
+SignInForm = reduxForm({
+	form: "signInForm",
+	validate: validateSignInForm,
 })(SignInForm);
+
+const mapStateToProps = state => ({
+	formValues: getFormValues("signInForm")(state),
+	invalid: isInvalid("signInForm")(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+	actions: {
+		users: bindActionCreators(allTheActions.users, dispatch),
+	},
+});
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(SignInForm);

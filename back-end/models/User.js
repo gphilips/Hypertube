@@ -27,11 +27,11 @@ const userSchema = new mongoose.Schema({
   lastname: {
     type: String,
     default: '',
-    required: true,      
+    required: true,
   },
-  gender: {
+  avatar: {
     type: String,
-    enum: ['man', 'woman', 'both'],
+    default: '',
   },
   lang: {
     type: String,
@@ -39,14 +39,14 @@ const userSchema = new mongoose.Schema({
   },
   resetPwdToken: String,
   resetPwdTokenExpire: Date,
-  location: String,
-  picture: String,
-  pictureURL: String,
-  movies: [String],
+  movies: [Object],
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  fortytwoId: String,
+  facebookId: String,
+  googleId: String,
 });
 
 

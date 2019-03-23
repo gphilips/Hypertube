@@ -4,16 +4,16 @@
  * Module dependencies.
  */
 
-const app = require('../app');
-const debug = require('debug')('hypertubeapi:server');
-const http = require('http');
-require('dotenv').config({path: "../config"});
+const app = require("../app");
+const debug = require("debug")("hypertubeapi:server");
+const http = require("http");
+require("dotenv").config({ path: "../config" });
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
-normalizePort = (val) => {
+normalizePort = val => {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -27,35 +27,33 @@ normalizePort = (val) => {
   }
 
   return false;
-}
+};
 
 /**
  * Event listener for HTTP server "error" event.
  */
 
-onError = (error) => {
-  if (error.syscall !== 'listen') {
+onError = error => {
+  if (error.syscall !== "listen") {
     throw error;
   }
 
-  const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
       process.exit(1);
       break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
       process.exit(1);
       break;
     default:
       throw error;
   }
-}
+};
 
 /**
  * Event listener for HTTP server "listening" event.
@@ -63,29 +61,29 @@ onError = (error) => {
 
 onListening = () => {
   const addr = server.address();
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+  const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  debug("Listening on " + bind);
+};
 
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '5000');
-app.set('port', port);
+const port = normalizePort(process.env.PORT || "5000");
+app.set("port", port);
 
 /**
  * Create HTTP server.
  */
 
 const server = http.createServer(app);
+server.timeout = 0;
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
 server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+server.keepAliveTimeout = 60000 * 2;
+server.on("error", onError);
+server.on("listening", onListening);

@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-const setAuthToken = (token) => {
+const setAuthToken = (token, init = false) => {
   if (token) {
-    localStorage.setItem('Authorization', token);
-    axios.defaults.headers.common['Authorization'] = token;
+    if (init) localStorage.setItem('Authorization', token);
+    axios.defaults.headers.common.Authorization = token;
   }
   else {
     localStorage.removeItem('Authorization');    
-    delete axios.defaults.headers.common['Authorization'];    
+    delete axios.defaults.headers.common.Authorization;    
   }
 }
 

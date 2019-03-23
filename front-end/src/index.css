@@ -1,12 +1,93 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Helvetica Neue',Helvetica, -apple-system, BlinkMacSystemFont, "Roboto", Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, -apple-system, BlinkMacSystemFont,
+    "Roboto", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #262626;
+  overflow-x: hidden;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b30000;
+  height: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000;
+}
+
+.input-range {
+  display: inline-block;
+  width: 70% !important;
+  touch-action: none !important;
+}
+
+@media (max-width: 767px) {
+  .input-range {
+    display: block;
+    margin-bottom: 35px !important;
+    touch-action: none !important;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90% !important;
+  }
+}
+
+.input-range__track--active {
+  background: #b30000 !important;
+}
+
+.input-range__slider {
+  background: #b30000 !important;
+  border: 1px solid #b30000 !important;
+}
+
+.subtitles-menu {
+  position: absolute;
+  right: 0%;
+  margin-top: -4% !important;
+  list-style: none;
+  width: 10%;
+  padding: 0;
+}
+
+.subtitles-menu li button {
+  border: none;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+  width: 100%;
+  font-size: 12px;
+  padding: 2%;
+}
+
+.subtitles-menu li:nth-child(1) button {
+  padding-top: 2%;
+}
+.subtitles-menu li:first-child button {
+  padding-top: 4%;
+}
+
+.subtitles-menu li:last-child button {
+  padding-bottom: 4%;
+}
+
+.subtitles-menu li button:hover {
+  background: #262626;
+}
+.subtitles-menu li button:focus,
+#subtitles:focus {
+  outline: none;
 }

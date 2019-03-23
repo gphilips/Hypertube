@@ -10,7 +10,7 @@ const Input = styled(TextField)`
   margin: 30px 0 10px;
 `;
 const Error = styled.span`
-  color: orange;
+  color: ${props => props.theme.color[props.redColor ? "redError" : "orangeError"]};
 `;
 
 class InputText extends React.Component {
@@ -19,6 +19,7 @@ class InputText extends React.Component {
       input,
       label,
       type,
+      redErrorColor,
       meta: { touched, error },
       ...custom
     } = this.props;
@@ -33,7 +34,7 @@ class InputText extends React.Component {
           variant="filled"
         />
         {touched && error && (
-          <Error>{ error }</Error>
+          <Error redColor={redErrorColor}>{ error }</Error>
         )}
       </div>
     );
