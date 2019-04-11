@@ -1,4 +1,4 @@
-# Description
+# Hypertube
 
 Hypertube is a web application allowing a user to search and watch movies.
 
@@ -9,3 +9,6 @@ The search engine will query several external sources of your choice.
 Once a movie is selected, it will be downloaded to the server and stream on the web player at the same time.
 
 In other words, the player will not only display the video once the download is complete, but will be able to stream the stream directly and convert the format if it's not compatible natively with the browser.
+
+# Watch the demo
+[![Watch the demo](https://img.youtube.com/vi/_8e3zo-Cxeg/hqdefault.jpg)](https://youtu.be/_8e3zo-Cxeg)
